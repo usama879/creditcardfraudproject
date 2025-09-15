@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
 
                 Intent intent;
                 if (prefs.contains("id")) {
-                    intent = new Intent(MainActivity.this, HomeActivity.class);
+                    intent = new Intent(MainActivity.this, DashboardActivity.class);
                 } else {
                     intent = new Intent(MainActivity.this, LoginActivity.class);
                 }

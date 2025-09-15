@@ -18,10 +18,44 @@
     <color name="button_outline_pressed">#EFF6FF</color>
     <color name="icon_tint">#6B7280</color>
     <color name="divider_color">#E5E7EB</color>
-    <color name="background_white">#FFFFFF</color>
 
     <color name="light_gray_bg">#F5F6FA</color>
     <color name="subtitle_gray">#A0A0A0</color>
 
+    <color name="nav_selected">#1E3A8A</color>
+    <color name="nav_unselected">#9CA3AF</color>
+    <color name="nav_border">#E5E7EB</color>
+    <color name="nav_pressed">#F3F4F6</color>
+
+    <color name="background_light">#F9FAFB</color>
+
+
+    <color name="primary_blue">#1E3A8A</color>
+    <color name="primary_blue_light">#3B82F6</color>
+    <color name="primary_blue_lighter">#6B9EFF</color>
+    <color name="accent_blue">#4A80FF</color>
+    <color name="accent_blue_dark">#2563EB</color>
+
+    <color name="text_tertiary">#9CA3AF</color>
+
+    <color name="surface_secondary">#F5F6FA</color>
+    <color name="surface_tertiary">#F3F4F6</color>
+    <color name="surface_quaternary">#F9FAFB</color>
+
+    <color name="background_primary">#EFF6FF</color>
+    <color name="background_secondary">#F9FAFB</color>
+
+    <color name="border_light">#E5E7EB</color>
+    <color name="border_medium">#9CA3AF</color>
+    <color name="border_dark">#6B7280</color>
+
+    <color name="accent_red">#EF4444</color>
+    <color name="accent_orange">#F59E0B</color>
+    <color name="accent_green">#10B981</color>
+    <color name="accent_gray">#A0A0A0</color>
+
+    <color name="alert_high">#EF4444</color>
+    <color name="alert_medium">#F59E0B</color>
+    <color name="alert_low">#10B981</color>
 
 </resources>

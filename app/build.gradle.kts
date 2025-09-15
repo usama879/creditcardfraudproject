@@ -47,4 +47,5 @@ dependencies {
     implementation("com.squareup.picasso:picasso:2.8")
     implementation("com.github.corouteam:GlideToVectorYou:v2.0.0")
     implementation("com.airbnb.android:lottie:3.4.0")
+    implementation("com.google.android.gms:play-services-location:21.1.0")
 }

@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".DashboardActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@color/background_light">
+
+        <FrameLayout
+            android:id="@+id/contentContainer"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:orientation="horizontal"
+            android:background="@drawable/bottom_nav_background"
+            android:elevation="8dp"
+            android:paddingVertical="8dp"
+            android:paddingHorizontal="12dp">
+
+            <LinearLayout
+                android:id="@+id/navHome"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:background="@drawable/nav_item_selector"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="6dp">
+
+                <ImageView
+                    android:id="@+id/iconHome"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_home_selected"
+                    android:layout_marginBottom="4dp" />
+
+                <TextView
+                    android:id="@+id/textHome"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Home"
+                    android:textSize="11sp"
+                    android:textColor="@color/deep_blue"
+                    android:fontFamily="@font/inter_medium" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/navTransactions"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:background="@drawable/nav_item_selector"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="6dp">
+
+                <ImageView
+                    android:id="@+id/iconTransactions"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_transactions_unselected_alt"
+                    android:layout_marginBottom="4dp" />
+
+                <TextView
+                    android:id="@+id/textTransactions"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Transactions"
+                    android:textSize="11sp"
+                    android:textColor="@color/nav_unselected"
+                    android:fontFamily="@font/inter_regular" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/navAlerts"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:background="@drawable/nav_item_selector"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="6dp">
+
+                <ImageView
+                    android:id="@+id/iconAlerts"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_alerts_unselected_alt"
+                    android:layout_marginBottom="4dp" />
+
+                <TextView
+                    android:id="@+id/textAlerts"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Alerts"
+                    android:textSize="11sp"
+                    android:textColor="@color/nav_unselected"
+                    android:fontFamily="@font/inter_regular" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/navProfile"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:background="@drawable/nav_item_selector"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="6dp">
+
+                <ImageView
+                    android:id="@+id/iconProfile"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_profile_unselected"
+                    android:layout_marginBottom="4dp" />
+
+                <TextView
+                    android:id="@+id/textProfile"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Profile"
+                    android:textSize="11sp"
+                    android:textColor="@color/nav_unselected"
+                    android:fontFamily="@font/inter_regular" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>

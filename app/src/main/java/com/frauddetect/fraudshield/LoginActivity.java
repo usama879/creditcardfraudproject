@@ -11,11 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.frauddetect.fraudshield.Models.ApiClient;
 import com.frauddetect.fraudshield.Models.SupabaseApi;
@@ -100,7 +96,7 @@ public class LoginActivity extends AppCompatActivity {
                     } else {
                         User user = users.get(0);
                         if (user.getPassword().equals(password)) {
-                            Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+                            Intent intent = new Intent(LoginActivity.this, DashboardActivity.class);
                             startActivity(intent);
                             saveUserIdToPrefs(user.getId());
                         } else {
