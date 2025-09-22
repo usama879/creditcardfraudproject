@@ -67,13 +67,33 @@ public class DashboardActivity extends AppCompatActivity {
 
         checkAndRequestLocationPermissions();
 
-        loadFragment(new HomeFragment());
-        setActive(navHome);
+        handleIntent(getIntent());
 
         navHome.setOnClickListener(v -> { loadFragment(new HomeFragment()); setActive(navHome); });
         navTransactions.setOnClickListener(v -> { loadFragment(new TransactionFragment()); setActive(navTransactions); });
         navAlerts.setOnClickListener(v -> { loadFragment(new AlertsFragment()); setActive(navAlerts); });
         navProfile.setOnClickListener(v -> { loadFragment(new ProfileFragment()); setActive(navProfile); });
+    }
+
+    private void handleIntent(Intent intent) {
+        String openFragment = intent.getStringExtra("openFragment");
+        if ("transactions".equals(openFragment)) {
+            loadFragment(new TransactionFragment());
+            setActive(navTransactions);
+        } else if ("alerts".equals(openFragment)) {
+            loadFragment(new AlertsFragment());
+            setActive(navAlerts);
+        } else {
+            loadFragment(new HomeFragment());
+            setActive(navHome);
+        }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        handleIntent(intent);
     }
 
     private void checkAndRequestLocationPermissions() {

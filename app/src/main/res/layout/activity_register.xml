@@ -120,6 +120,24 @@
                 android:textColor="@color/deep_blue"
                 android:fontFamily="@font/inter_regular" />
 
+            <EditText
+                android:id="@+id/editTextDOB"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="16dp"
+                android:hint="DOB"
+                android:textColorHint="#50000000"
+                android:inputType="text"
+                android:focusable="false"
+                android:background="@drawable/bg_edittext"
+                android:drawableLeft="@drawable/ic_calendar"
+                android:drawableTint="@color/lighter_blue"
+                android:drawablePadding="10dp"
+                android:paddingHorizontal="16dp"
+                android:textSize="14sp"
+                android:textColor="@color/deep_blue"
+                android:fontFamily="@font/inter_regular" />
+
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="56dp"

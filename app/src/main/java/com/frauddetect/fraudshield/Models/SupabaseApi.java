@@ -1,11 +1,13 @@
 package com.frauddetect.fraudshield.Models;
 
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Headers;
+import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
 
@@ -25,6 +27,30 @@ public interface SupabaseApi {
     @Headers({API_KEY, AUTHORIZATION})
     @GET("users")
     Call<List<User>> getUserById(@Query("id") String idFilter);
+
+    @Headers({API_KEY, AUTHORIZATION, "Content-Type: application/json"})
+    @POST("transaction_data")
+    Call<Void> createTransaction(@Body Transactions transaction);
+
+
+    @Headers({API_KEY, AUTHORIZATION})
+    @GET("transaction_data")
+    Call<List<Transactions>> getAllTransactions(@Query("user_id") String userIdFilter);
+
+    @Headers({API_KEY, AUTHORIZATION})
+    @GET("transaction_data")
+    Call<List<Transactions>> getTransactionsByUserAndStatus(@Query("user_id") String userIdFilter,
+                                                            @Query("status") String statusFilter);
+
+    @Headers({API_KEY, AUTHORIZATION, "Content-Type: application/json"})
+    @PATCH("transaction_data")
+    Call<Void> updateTransactionStatus(@Query("tid") String tidFilter, @Body Map<String, String> statusBody);
+
+
+    @Headers({API_KEY, AUTHORIZATION, "Content-Type: application/json"})
+    @PATCH("users")
+    Call<Void> updateUserById(@Query("id") String idFilter, @Body Map<String, String> updatedData);
+
 
 }
 

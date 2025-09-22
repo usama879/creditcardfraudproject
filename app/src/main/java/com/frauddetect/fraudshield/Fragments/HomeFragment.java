@@ -6,36 +6,50 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.frauddetect.fraudshield.Adapters.RecentAlertsAdapter;
 import com.frauddetect.fraudshield.AddTransactionActivity;
+import com.frauddetect.fraudshield.DashboardActivity;
+import com.frauddetect.fraudshield.FraudDetectionActivity;
+import com.frauddetect.fraudshield.LoginActivity;
 import com.frauddetect.fraudshield.Models.ApiClient;
 import com.frauddetect.fraudshield.Models.SupabaseApi;
+import com.frauddetect.fraudshield.Models.Transactions;
 import com.frauddetect.fraudshield.Models.User;
 import com.frauddetect.fraudshield.R;
+import com.frauddetect.fraudshield.StatisticsAnalyticsActivity;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class HomeFragment extends Fragment {
 
     TextView tvGreeting, tvUsername;
-    CardView card_add_transaction;
+    CardView card_add_transaction, card_view_transactions, card_fraud_detection, card_reports_analytics, logout_user, card_alerts_summary,
+            viewAlertsBtn;
+    TextView tv_alert_count;
+    RecyclerView rv_recent_alerts;
+    RecentAlertsAdapter recentAlertsAdapter;
+    ProgressBar recent_alert_progress;
 
 
     @Override
@@ -46,6 +60,75 @@ public class HomeFragment extends Fragment {
         tvGreeting = view.findViewById(R.id.tv_greeting);
         tvUsername = view.findViewById(R.id.tv_username);
         card_add_transaction = view.findViewById(R.id.card_add_transaction);
+        card_view_transactions = view.findViewById(R.id.card_view_transactions);
+        card_fraud_detection = view.findViewById(R.id.card_fraud_detection);
+        card_reports_analytics = view.findViewById(R.id.card_reports_analytics);
+        logout_user = view.findViewById(R.id.logout_user);
+        card_alerts_summary = view.findViewById(R.id.card_alerts_summary);
+        tv_alert_count = view.findViewById(R.id.tv_alert_count);
+        rv_recent_alerts = view.findViewById(R.id.rv_recent_alerts);
+        viewAlertsBtn = view.findViewById(R.id.viewAlertsBtn);
+        recent_alert_progress = view.findViewById(R.id.recent_alert_progress);
+
+        rv_recent_alerts.setLayoutManager(new LinearLayoutManager(getContext()));
+        recentAlertsAdapter = new RecentAlertsAdapter(getContext(), new ArrayList<>());
+        rv_recent_alerts.setAdapter(recentAlertsAdapter);
+
+        loadAlerts();
+
+        logout_user.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                SharedPreferences sharedPreferences = requireContext().getSharedPreferences("user_pref", Context.MODE_PRIVATE);
+                sharedPreferences.edit().clear().apply();
+
+                Toast.makeText(getContext(), "Logout", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(requireContext(), LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                requireActivity().finish();
+
+            }
+        });
+
+        viewAlertsBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), DashboardActivity.class);
+                intent.putExtra("openFragment", "alerts");
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                startActivity(intent);
+            }
+        });
+
+        card_reports_analytics.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), StatisticsAnalyticsActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        card_fraud_detection.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), FraudDetectionActivity.class);
+                startActivity(intent);
+
+            }
+        });
+
+        card_view_transactions.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), DashboardActivity.class);
+                intent.putExtra("openFragment", "transactions");
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                startActivity(intent);
+            }
+        });
+
 
         card_add_transaction.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -59,6 +142,62 @@ public class HomeFragment extends Fragment {
         loadUsernameFromSupabase();
 
         return view;
+    }
+
+    private void loadAlerts() {
+        SharedPreferences sharedPreferences = requireContext().getSharedPreferences("user_pref", Context.MODE_PRIVATE);
+        String userId = sharedPreferences.getString("id", null);
+        if (userId == null) return;
+
+        SupabaseApi api = ApiClient.getClient().create(SupabaseApi.class);
+
+        Call<List<Transactions>> fraudCall = api.getTransactionsByUserAndStatus("eq." + userId, "eq.fraud");
+        Call<List<Transactions>> unverifiedCall = api.getTransactionsByUserAndStatus("eq." + userId, "eq.Unverified");
+
+        fraudCall.enqueue(new Callback<List<Transactions>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<Transactions>> call, @NonNull Response<List<Transactions>> fraudResponse) {
+                List<Transactions> fraudList = fraudResponse.isSuccessful() && fraudResponse.body() != null
+                        ? fraudResponse.body() : new ArrayList<>();
+
+                unverifiedCall.enqueue(new Callback<List<Transactions>>() {
+                    @Override
+                    public void onResponse(@NonNull Call<List<Transactions>> call, @NonNull Response<List<Transactions>> unverifiedResponse) {
+                        List<Transactions> unverifiedList = unverifiedResponse.isSuccessful() && unverifiedResponse.body() != null
+                                ? unverifiedResponse.body() : new ArrayList<>();
+
+                        List<Transactions> alertList = new ArrayList<>();
+                        alertList.addAll(fraudList);
+                        alertList.addAll(unverifiedList);
+
+                        tv_alert_count.setText(String.valueOf(alertList.size()));
+
+                        Collections.sort(alertList, (t1, t2) -> t2.getDate().compareTo(t1.getDate()));
+
+                        if (alertList.size() > 2) {
+                            alertList = alertList.subList(0, 2);
+                        }
+
+                        recentAlertsAdapter = new RecentAlertsAdapter(getContext(), alertList);
+                        rv_recent_alerts.setAdapter(recentAlertsAdapter);
+
+                        recent_alert_progress.setVisibility(View.GONE);
+                        rv_recent_alerts.setVisibility(View.VISIBLE);
+
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<List<Transactions>> call, @NonNull Throwable t) {
+                        Log.e("HomeFragment", "Error loading unverified transactions: " + t.getMessage());
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<Transactions>> call, @NonNull Throwable t) {
+                Log.e("HomeFragment", "Error loading fraud transactions: " + t.getMessage());
+            }
+        });
     }
 
     private void setGreetingMessage() {
@@ -82,7 +221,6 @@ public class HomeFragment extends Fragment {
         String userId = sharedPreferences.getString("id", null);
 
         if (userId == null) {
-            Toast.makeText(requireContext(), "User not found in preferences", Toast.LENGTH_SHORT).show();
             return;
         }
 

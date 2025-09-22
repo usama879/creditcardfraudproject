@@ -25,8 +25,13 @@ import androidx.core.view.WindowInsetsCompat;
 import com.frauddetect.fraudshield.Models.ApiClient;
 import com.frauddetect.fraudshield.Models.SupabaseApi;
 import com.frauddetect.fraudshield.Models.User;
+import com.google.android.material.datepicker.MaterialDatePicker;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 import retrofit2.Call;
@@ -35,7 +40,7 @@ import retrofit2.Response;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    private EditText etName, etEmail, etPassword, etConfirmPassword, editTextPhone;
+    private EditText etName, etEmail, etPassword, etConfirmPassword, editTextPhone, etDOB;
     private Button btnRegister;
     private ImageView ivTogglePassword, ivToggleConfirmPassword;
     private TextView tvLogin;
@@ -57,6 +62,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         initViews();
         setupListeners();
+        setupDatePicker();
 
     }
 
@@ -66,6 +72,8 @@ public class RegisterActivity extends AppCompatActivity {
         editTextPhone = findViewById(R.id.editTextPhone);
         etPassword = findViewById(R.id.editTextPassword);
         etConfirmPassword = findViewById(R.id.editTextConfirmPassword);
+        etDOB = findViewById(R.id.editTextDOB);
+
         btnRegister = findViewById(R.id.buttonRegister);
         ivTogglePassword = findViewById(R.id.iconToggle);
         ivToggleConfirmPassword = findViewById(R.id.iconConfirmToggle);
@@ -83,6 +91,24 @@ public class RegisterActivity extends AppCompatActivity {
         imageSpecialCharRule = findViewById(R.id.imageSpecialCharRule);
 
     }
+
+    private void setupDatePicker() {
+        etDOB.setOnClickListener(v -> {
+            MaterialDatePicker<Long> datePicker =
+                    MaterialDatePicker.Builder.datePicker()
+                            .setTitleText("Select Date of Birth")
+                            .build();
+
+            datePicker.addOnPositiveButtonClickListener(selection -> {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                String dob = sdf.format(selection);
+                etDOB.setText(dob);
+            });
+
+            datePicker.show(getSupportFragmentManager(), "DATE_PICKER");
+        });
+    }
+
 
     private void setupListeners() {
         tvLogin.setOnClickListener(v -> {
@@ -230,6 +256,26 @@ public class RegisterActivity extends AppCompatActivity {
         String phone = editTextPhone.getText().toString().trim();
         String password = etPassword.getText().toString().trim();
 
+        String dobStr = etDOB.getText().toString().trim();
+        int age = 0;
+        if (!dobStr.isEmpty()) {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            try {
+                Date dobDate = sdf.parse(dobStr);
+                Calendar dobCalendar = Calendar.getInstance();
+                dobCalendar.setTime(dobDate);
+                Calendar today = Calendar.getInstance();
+                age = today.get(Calendar.YEAR) - dobCalendar.get(Calendar.YEAR);
+                if (today.get(Calendar.DAY_OF_YEAR) < dobCalendar.get(Calendar.DAY_OF_YEAR)) {
+                    age--;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        final int userAge = age;
+
         ProgressDialog progressDialog = new ProgressDialog(RegisterActivity.this);
         progressDialog.setMessage("Please wait, we are creating account...");
         progressDialog.setCancelable(false);
@@ -245,20 +291,17 @@ public class RegisterActivity extends AppCompatActivity {
                     progressDialog.dismiss();
                     Toast.makeText(RegisterActivity.this, "Account already exists with this email.", Toast.LENGTH_LONG).show();
                 } else {
-                    User user = new User(id, name, email, phone, password);
+                    User user = new User(id, name, email, phone, password, String.valueOf(userAge));
                     api.createUser(user).enqueue(new Callback<Void>() {
                         @Override
                         public void onResponse(Call<Void> call, Response<Void> response) {
                             if (response.isSuccessful()) {
-                                new Handler().postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        progressDialog.dismiss();
-                                        Toast.makeText(RegisterActivity.this, "Registration successful", Toast.LENGTH_LONG).show();
-                                        saveUserIdToPrefs(id);
-                                        startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
-                                        finish();
-                                    }
+                                new Handler().postDelayed(() -> {
+                                    progressDialog.dismiss();
+                                    Toast.makeText(RegisterActivity.this, "Registration successful", Toast.LENGTH_LONG).show();
+                                    saveUserIdToPrefs(id);
+                                    startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+                                    finish();
                                 }, 1600);
                             } else {
                                 progressDialog.dismiss();
