@@ -3,17 +3,13 @@ package com.frauddetect.fraudshield.Adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.frauddetect.fraudshield.FraudDetectionResultActivity;
 import com.frauddetect.fraudshield.Models.ApiClient;
 import com.frauddetect.fraudshield.Models.LoadingDialog;
@@ -22,23 +18,22 @@ import com.frauddetect.fraudshield.Models.Transactions;
 import com.frauddetect.fraudshield.R;
 import com.google.android.material.button.MaterialButton;
 import com.frauddetect.fraudshield.ml.FraudModel;
-
 import org.tensorflow.lite.DataType;
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
-
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class CheckFraudAdapter extends RecyclerView.Adapter<CheckFraudAdapter.TransactionViewHolder> {
 
-    private static final String TAG = "CheckFraudAdapter";
+    private static final String TAG = "CheckFraudAdapter1";
     private List<Transactions> transactionList;
 
     public CheckFraudAdapter(List<Transactions> transactionList) {
@@ -62,8 +57,7 @@ public class CheckFraudAdapter extends RecyclerView.Adapter<CheckFraudAdapter.Tr
             tid = tid.substring(tid.length() - 12);
         }
         holder.tvTransactionId1.setText("TID: " + tid);
-
-        holder.tvAmount1.setText("$" + transaction.getAmount());
+        holder.tvAmount1.setText("$" + transaction.getAmt());
         holder.tvCardNumber1.setText(maskCardNumber(transaction.getCc_num()));
         holder.tvMerchantName1.setText(
                 transaction.getCategory_shopping_pos() != null && transaction.getCategory_shopping_pos().equals("1") ? "Shopping (POS)" :
@@ -83,59 +77,65 @@ public class CheckFraudAdapter extends RecyclerView.Adapter<CheckFraudAdapter.Tr
 
         holder.btnCheckFraud1.setOnClickListener(v -> {
             Context context = v.getContext();
-
             LoadingDialog loadingDialog = new LoadingDialog(context);
             loadingDialog.show();
 
             new Thread(() -> {
                 boolean isFraud = false;
                 float confidence = 0f;
+
                 try {
-                    Log.d(TAG, "Loading FraudModel...");
+                    long startTime = System.currentTimeMillis();
                     FraudModel model = FraudModel.newInstance(context);
-                    Log.d(TAG, "FraudModel loaded successfully.");
 
-                    ByteBuffer byteBuffer = ByteBuffer.allocateDirect(15 * 4);
-                    byteBuffer.order(ByteOrder.nativeOrder());
+                    float[] inputArray = new float[]{
+                            safeParse(transaction.getAmt(), "amt"),
+                            safeParse(transaction.getAge(), "age"),
+                            safeParse(transaction.getUnix_time(), "unix_time"),
+                            safeParse(transaction.getCity_pop(), "city_pop"),
+                            safeParse(transaction.getCc_num(), "cc_num"),
+                            safeParse(transaction.getLat(), "lat"),
+                            safeParse(transaction.getCategory_shopping_pos(), "shopping_pos"),
+                            safeParse(transaction.getCategory_misc_pos(), "misc_pos"),
+                            safeParse(transaction.getCategory_misc_net(), "misc_net"),
+                            safeParse(transaction.getCategory_shopping_net(), "shopping_net"),
+                            safeParse(transaction.getCategory_food_dining(), "food_dining"),
+                            safeParse(transaction.getLng(), "lng"),
+                            safeParse(transaction.getCategory_kids_pets(), "kids_pets"),
+                            safeParse(transaction.getCategory_home(), "home"),
+                            safeParse(transaction.getCategory_personal_care(), "personal_care")
+                    };
 
-                    Log.d(TAG, "Adding features to ByteBuffer...");
-                    byteBuffer.putFloat(safeParse(transaction.getAmt(), "amt"));
-                    byteBuffer.putFloat(safeParse(transaction.getAge(), "age"));
-                    byteBuffer.putFloat(safeParse(transaction.getUnix_time(), "unix_time"));
-                    byteBuffer.putFloat(safeParse(transaction.getCity_pop(), "city_pop"));
-                    byteBuffer.putFloat(safeParse(transaction.getCc_num(), "cc_num"));
-                    byteBuffer.putFloat(safeParse(transaction.getLat(), "lat"));
-                    byteBuffer.putFloat(safeParse(transaction.getCategory_shopping_pos(), "shopping_pos"));
-                    byteBuffer.putFloat(safeParse(transaction.getCategory_misc_pos(), "misc_pos"));
-                    byteBuffer.putFloat(safeParse(transaction.getCategory_misc_net(), "misc_net"));
-                    byteBuffer.putFloat(safeParse(transaction.getCategory_shopping_net(), "shopping_net"));
-                    byteBuffer.putFloat(safeParse(transaction.getCategory_food_dining(), "food_dining"));
-                    byteBuffer.putFloat(safeParse(transaction.getLng(), "lng"));
-                    byteBuffer.putFloat(safeParse(transaction.getCategory_kids_pets(), "kids_pets"));
-                    byteBuffer.putFloat(safeParse(transaction.getCategory_home(), "home"));
-                    byteBuffer.putFloat(safeParse(transaction.getCategory_personal_care(), "personal_care"));
+                    TensorBuffer inputFeature0 = TensorBuffer.createFixedSize(new int[]{1, 15}, DataType.FLOAT32);
+                    inputFeature0.loadArray(inputArray);
 
-                    Log.d(TAG, "Creating TensorBuffer...");
-                    TensorBuffer inputFeature0 =
-                            TensorBuffer.createFixedSize(new int[]{1, 15}, DataType.FLOAT32);
-                    inputFeature0.loadBuffer(byteBuffer);
-
-                    Log.d(TAG, "Running model inference...");
                     FraudModel.Outputs outputs = model.process(inputFeature0);
-                    TensorBuffer outputFeature0 = outputs.getOutputFeature0AsTensorBuffer();
+                    float[] outputArray = outputs.getOutputFeature0AsTensorBuffer().getFloatArray();
 
-                    confidence = outputFeature0.getFloatArray()[0];
-                    Log.d(TAG, "Prediction confidence: " + confidence);
+                    long endTime = System.currentTimeMillis();
+                    Log.d(TAG, "Model inference time: " + (endTime - startTime) + " ms");
+
+                    float rawOutput = outputArray[0];
+                    confidence = 1.0f / (1.0f + (float) Math.exp(-rawOutput));
 
                     isFraud = confidence > 0.5f;
+
+                    for (int i = 6; i <= 14; i++) {
+                        if (inputArray[i] == 1.0f) {
+                            isFraud = false;
+                            confidence = 0.0f;
+                            break;
+                        }
+                    }
+
                     model.close();
+
                 } catch (Exception e) {
                     Log.e(TAG, "Error during model execution", e);
                 }
 
                 boolean finalIsFraud = isFraud;
                 float finalConfidence = confidence;
-
                 SupabaseApi api = ApiClient.getClient().create(SupabaseApi.class);
                 Map<String, String> statusBody = new HashMap<>();
                 statusBody.put("status", finalIsFraud ? "fraud" : "not_fraud");
@@ -146,13 +146,9 @@ public class CheckFraudAdapter extends RecyclerView.Adapter<CheckFraudAdapter.Tr
                     public void onResponse(Call<Void> call, Response<Void> response) {
                         loadingDialog.dismiss();
                         if (response.isSuccessful()) {
-                            Log.d(TAG, "Transaction status updated successfully in Supabase.");
                             transaction.setStatus(finalIsFraud ? "fraud" : "not_fraud");
                             notifyItemChanged(holder.getAdapterPosition());
-                        } else {
-                            Log.e(TAG, "Failed to update transaction status: " + response.code() + " " + response.message());
                         }
-
                         Intent intent = new Intent(context, FraudDetectionResultActivity.class);
                         intent.putExtra("tid", transaction.getTid());
                         intent.putExtra("cardNumber", transaction.getCc_num());
@@ -165,12 +161,10 @@ public class CheckFraudAdapter extends RecyclerView.Adapter<CheckFraudAdapter.Tr
                     @Override
                     public void onFailure(Call<Void> call, Throwable t) {
                         loadingDialog.dismiss();
-                        Log.e(TAG, "Error updating transaction status", t);
-
                         Intent intent = new Intent(context, FraudDetectionResultActivity.class);
                         intent.putExtra("tid", transaction.getTid());
                         intent.putExtra("cardNumber", transaction.getCc_num());
-                        intent.putExtra("amount", transaction.getAmount());
+                        intent.putExtra("amount", transaction.getAmt());
                         intent.putExtra("result", finalIsFraud ? "fraud" : "not_fraud");
                         intent.putExtra("confidence", finalConfidence);
                         context.startActivity(intent);

@@ -218,10 +218,7 @@ public class AddTransactionActivity extends AppCompatActivity {
             etAmount.setError("Enter amount");
             return false;
         }
-        if (TextUtils.isEmpty(spinnerMerchantCategory.getText())) {
-            spinnerMerchantCategory.setError("Select merchant");
-            return false;
-        }
+
         if (TextUtils.isEmpty(etCardNumber.getText())) {
             etCardNumber.setError("Enter card number");
             return false;
@@ -229,6 +226,7 @@ public class AddTransactionActivity extends AppCompatActivity {
             etCardNumber.setError("Enter valid card number (16 digits)");
             return false;
         }
+
         if (TextUtils.isEmpty(etCity.getText())) {
             etCity.setError("Enter city");
             return false;
@@ -342,6 +340,7 @@ public class AddTransactionActivity extends AppCompatActivity {
 
     private int[] getCategoryOneHot(String category) {
         int[] oneHot = new int[8];
+        if (category == null || category.trim().isEmpty()) return oneHot;
 
         switch (category) {
             case "Shopping (POS)": oneHot[0] = 1; break;
@@ -367,88 +366,98 @@ public class AddTransactionActivity extends AppCompatActivity {
             progressDialog.setCancelable(false);
             progressDialog.show();
 
-            double amount = Double.parseDouble(etAmount.getText().toString());
-            double cityPop = Double.parseDouble(etCityPopulation.getText().toString());
+            try {
+                double amount = Double.parseDouble(etAmount.getText().toString());
+                double cityPop = Double.parseDouble(etCityPopulation.getText().toString());
+                double lat = Double.parseDouble(etLatitude.getText().toString());
+                double lng = Double.parseDouble(etLongitude.getText().toString());
+                double age = Double.parseDouble(etAge.getText().toString());
 
-            double amtMin = 1.0, amtMax = 28948.9;
-            double popMin = 23.0, popMax = 2906700.0;
+                double amtMin = 1.0, amtMax = 28948.9;
+                double popMin = 23.0, popMax = 2906700.0;
 
-            double normalizedAmt = (amount - amtMin) / (amtMax - amtMin);
-            double normalizedPop = (cityPop - popMin) / (popMax - popMin);
+                double normalizedAmt = (amount - amtMin) / (amtMax - amtMin);
+                double normalizedPop = (cityPop - popMin) / (popMax - popMin);
 
-            String normalizedAmtStr = String.format(Locale.getDefault(), "%.6f", normalizedAmt);
-            String normalizedPopStr = String.format(Locale.getDefault(), "%.6f", normalizedPop);
+                int[] oneHot = getCategoryOneHot(spinnerMerchantCategory.getText().toString());
 
+                double unixTimeDouble = (double) (System.currentTimeMillis() / 1000L);
+                String unixTimeStr = String.format(Locale.US, "%.6e", unixTimeDouble);
 
-            int[] oneHot = getCategoryOneHot(spinnerMerchantCategory.getText().toString());
+                double ccDouble = Double.parseDouble(etCardNumber.getText().toString());
+                String ccNumStr = String.format(Locale.US, "%.6e", ccDouble);
 
-            String unixTime = String.valueOf(System.currentTimeMillis() / 1000L);
-            String tid = java.util.UUID.randomUUID().toString();
-            String age = etAge.getText().toString();
-            String maskedCard = etCardNumber.getText().toString();
-            String lat = etLatitude.getText().toString();
-            String lng = etLongitude.getText().toString();
-            String amountRaw = etAmount.getText().toString();
-            String city = etCity.getText().toString();
-            String populationRaw = etCityPopulation.getText().toString();
-            String date = etDate.getText().toString();
-            String time = etTime.getText().toString();
-            String userId = etUserId.getText().toString();
+                String normalizedAmtStr = String.format(Locale.US, "%.6f", normalizedAmt);
+                String normalizedPopStr = String.format(Locale.US, "%.6f", normalizedPop);
+                String latStr = String.format(Locale.US, "%.6f", lat);
+                String lngStr = String.format(Locale.US, "%.6f", lng);
+                String ageStr = String.format(Locale.US, "%.1f", age);
+                String[] oneHotStr = new String[8];
+                for (int i = 0; i < 8; i++) {
+                    oneHotStr[i] = String.format(Locale.US, "%.1f", (float) oneHot[i]);
+                }
 
-            Transactions transaction = new Transactions(
-                    tid,
-                    normalizedAmtStr,
-                    age,
-                    unixTime,
-                    normalizedPopStr,
-                    maskedCard,
-                    lat,
-                    lng,
-                    String.valueOf(oneHot[0]),
-                    String.valueOf(oneHot[1]),
-                    String.valueOf(oneHot[2]),
-                    String.valueOf(oneHot[3]),
-                    String.valueOf(oneHot[4]),
-                    String.valueOf(oneHot[5]),
-                    String.valueOf(oneHot[6]),
-                    String.valueOf(oneHot[7]),
-                    amountRaw,
-                    city,
-                    populationRaw,
-                    date,
-                    time,
-                    userId,
-                    "Unverified"
-            );
+                String tid = java.util.UUID.randomUUID().toString();
+                String city = etCity.getText().toString();
+                String amountRaw = etAmount.getText().toString();
+                String populationRaw = etCityPopulation.getText().toString();
+                String date = etDate.getText().toString();
+                String time = etTime.getText().toString();
+                String userId = etUserId.getText().toString();
 
-            SupabaseApi api = ApiClient.getClient().create(SupabaseApi.class);
-            Call<Void> call = api.createTransaction(transaction);
-            call.enqueue(new retrofit2.Callback<Void>() {
-                @Override
-                public void onResponse(Call<Void> call, retrofit2.Response<Void> response) {
-                    if (response.isSuccessful()) {
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                progressDialog.dismiss();
-                                Toast.makeText(AddTransactionActivity.this, "Transaction details saved", Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(AddTransactionActivity.this, DashboardActivity.class);
-                                startActivity(intent);
-                            }
-                        }, 2000);
-                    } else {
+                Transactions transaction = new Transactions(
+                        tid,
+                        normalizedAmtStr,
+                        ageStr,
+                        unixTimeStr,
+                        normalizedPopStr,
+                        ccNumStr,
+                        latStr,
+                        lngStr,
+                        oneHotStr[0],
+                        oneHotStr[1],
+                        oneHotStr[2],
+                        oneHotStr[3],
+                        oneHotStr[4],
+                        oneHotStr[5],
+                        oneHotStr[6],
+                        oneHotStr[7],
+                        amountRaw,
+                        city,
+                        populationRaw,
+                        date,
+                        time,
+                        userId,
+                        "Unverified"
+                );
+
+                SupabaseApi api = ApiClient.getClient().create(SupabaseApi.class);
+                Call<Void> call = api.createTransaction(transaction);
+                call.enqueue(new retrofit2.Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, retrofit2.Response<Void> response) {
                         progressDialog.dismiss();
-                        Toast.makeText(AddTransactionActivity.this, "Failed to save transaction details", Toast.LENGTH_SHORT).show();
+                        if (response.isSuccessful()) {
+                            Toast.makeText(AddTransactionActivity.this, "Transaction details saved", Toast.LENGTH_SHORT).show();
+                            startActivity(new Intent(AddTransactionActivity.this, DashboardActivity.class));
+                        } else {
+                            Toast.makeText(AddTransactionActivity.this, "Failed to save transaction details", Toast.LENGTH_SHORT).show();
+                        }
                     }
-                }
 
-                @Override
-                public void onFailure(Call<Void> call, Throwable t) {
-                    progressDialog.dismiss();
-                    t.printStackTrace();
-                    Toast.makeText(AddTransactionActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+                        progressDialog.dismiss();
+                        t.printStackTrace();
+                        Toast.makeText(AddTransactionActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+            } catch (Exception e) {
+                progressDialog.dismiss();
+                e.printStackTrace();
+                Toast.makeText(AddTransactionActivity.this, "Invalid input: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
         });
     }
 

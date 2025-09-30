@@ -24,7 +24,6 @@
             app:titleTextColor="@color/white"
             app:navigationIcon="@drawable/ic_arrow_back"
             app:navigationIconTint="@color/white" />
-
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
@@ -37,16 +36,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="20dp">
+            android:padding="20dp"
+            android:clipToPadding="false"
+            android:clipChildren="false">
 
+            <!-- Status Card -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="24dp"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="4dp"
-                app:cardBackgroundColor="@color/surface_primary"
-                app:strokeWidth="0dp">
+                app:cardBackgroundColor="@color/surface_primary">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -72,30 +73,38 @@
                             android:src="@drawable/ic_security"
                             app:tint="@color/white"
                             android:contentDescription="Status Icon" />
-
                     </com.google.android.material.card.MaterialCardView>
 
                     <TextView
                         android:id="@+id/tvTransactionStatus"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textSize="28sp"
                         android:textColor="@color/deep_blue"
                         android:fontFamily="@font/inter_bold"
+                        android:gravity="center"
+                        android:textAlignment="center"
+                        android:ellipsize="none"
+                        android:singleLine="false"
                         android:layout_marginBottom="8dp"
-                        android:textAlignment="center" />
+                        tools:text="Fraud Detected!" />
 
                     <TextView
                         android:id="@+id/tvStatusMessage"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Our AI has analyzed this transaction"
                         android:textSize="16sp"
                         android:textColor="@color/text_secondary"
                         android:fontFamily="@font/inter_regular"
+                        android:gravity="center"
                         android:textAlignment="center"
+                        android:ellipsize="none"
+                        android:singleLine="false"
                         android:lineSpacingExtra="2dp"
-                        tools:text="This transaction shows suspicious patterns" />
+                        android:paddingTop="4dp"
+                        android:paddingBottom="8dp"
+                        tools:text="This transaction shows suspicious patterns and has been flagged as potentially fraudulent. Please verify with the cardholder." />
 
                     <LinearLayout
                         android:id="@+id/llConfidenceScore"
@@ -124,22 +133,20 @@
                             android:textColor="@color/deep_blue"
                             android:fontFamily="@font/inter_bold"
                             android:layout_gravity="center_horizontal"
-                            android:layout_marginTop="4dp" />
-
+                            android:layout_marginTop="4dp"
+                            tools:text="0.97" />
                     </LinearLayout>
-
                 </LinearLayout>
-
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- Transaction Details Card -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="2dp"
-                app:cardBackgroundColor="@color/surface_primary"
-                app:strokeWidth="0dp">
+                app:cardBackgroundColor="@color/surface_primary">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -147,6 +154,7 @@
                     android:orientation="vertical"
                     android:padding="24dp">
 
+                    <!-- Title Row -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -168,9 +176,9 @@
                             android:textSize="18sp"
                             android:textColor="@color/deep_blue"
                             android:fontFamily="@font/inter_semibold" />
-
                     </LinearLayout>
 
+                    <!-- Transaction ID -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -202,10 +210,11 @@
                             android:textSize="16sp"
                             android:textColor="@color/text_primary"
                             android:fontFamily="@font/inter_semibold"
-                            android:gravity="end" />
-
+                            android:gravity="end"
+                            tools:text="TXN123456789" />
                     </LinearLayout>
 
+                    <!-- Amount -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -237,10 +246,11 @@
                             android:textSize="18sp"
                             android:textColor="@color/deep_blue"
                             android:fontFamily="@font/inter_bold"
-                            android:gravity="end" />
-
+                            android:gravity="end"
+                            tools:text="$275.00" />
                     </LinearLayout>
 
+                    <!-- Card Number -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -272,10 +282,11 @@
                             android:textSize="16sp"
                             android:textColor="@color/text_primary"
                             android:fontFamily="@font/inter_semibold"
-                            android:gravity="end" />
-
+                            android:gravity="end"
+                            tools:text="**** **** **** 4390" />
                     </LinearLayout>
 
+                    <!-- Analyzed Time -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -306,12 +317,10 @@
                             android:textSize="16sp"
                             android:textColor="@color/text_primary"
                             android:fontFamily="@font/inter_semibold"
-                            android:gravity="end" />
-
+                            android:gravity="end"
+                            tools:text="Oct 7, 2025 at 10:30 AM" />
                     </LinearLayout>
-
                 </LinearLayout>
-
             </com.google.android.material.card.MaterialCardView>
 
             <LinearLayout
@@ -323,10 +332,8 @@
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnAnalyzeAnother"
                     style="@style/Widget.Material3.Button.OutlinedButton"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="48dp"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="8dp"
                     android:text="Analyze Another"
                     android:textAllCaps="false"
                     android:textColor="@color/deep_blue"
@@ -334,12 +341,7 @@
                     app:cornerRadius="12dp"
                     app:strokeColor="@color/deep_blue"
                     app:strokeWidth="1dp" />
-
-
             </LinearLayout>
-
         </LinearLayout>
-
     </androidx.core.widget.NestedScrollView>
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
