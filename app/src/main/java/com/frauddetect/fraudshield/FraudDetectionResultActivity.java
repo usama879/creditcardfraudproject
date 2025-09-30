@@ -3,6 +3,7 @@ package com.frauddetect.fraudshield;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -10,6 +11,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 
@@ -25,6 +27,8 @@ public class FraudDetectionResultActivity extends AppCompatActivity {
     private ImageView ivStatusIcon;
     private MaterialCardView cvStatusIcon;
     private MaterialButton btnAnalyzeAnother;
+    MaterialToolbar fraudAnalysisToolbar;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,10 +37,25 @@ public class FraudDetectionResultActivity extends AppCompatActivity {
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
+        fraudAnalysisToolbar = findViewById(R.id.fraudAnalysisToolbar);
+
+        fraudAnalysisToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(FraudDetectionResultActivity.this, FraudDetectionActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                finish();
+
+            }
+        });
+
+
         initViews();
-        setupToolbar();
         displayResults();
         setupButtons();
+
+
     }
 
     private void initViews() {
@@ -51,10 +70,6 @@ public class FraudDetectionResultActivity extends AppCompatActivity {
         cvStatusIcon = findViewById(R.id.cvStatusIcon);
         btnAnalyzeAnother = findViewById(R.id.btnAnalyzeAnother);
 
-    }
-
-    private void setupToolbar() {
-        findViewById(R.id.toolbar).setOnClickListener(v -> finish());
     }
 
     private void displayResults() {

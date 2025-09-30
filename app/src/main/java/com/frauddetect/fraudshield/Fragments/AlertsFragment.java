@@ -13,10 +13,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import com.frauddetect.fraudshield.Adapters.AlertsAdapter;
-import com.frauddetect.fraudshield.Adapters.RecentAlertsAdapter;
 import com.frauddetect.fraudshield.Models.ApiClient;
 import com.frauddetect.fraudshield.Models.SupabaseApi;
 import com.frauddetect.fraudshield.Models.Transactions;
@@ -36,6 +37,7 @@ public class AlertsFragment extends Fragment {
     RecyclerView alerts_recyclerview;
     AlertsAdapter recentAlertsAdapter;
     ProgressBar alert_progress;
+    LinearLayout empty_alerts_state;
 
 
     @Override
@@ -43,8 +45,11 @@ public class AlertsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_alerts, container, false);
 
+        getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         alerts_recyclerview = view.findViewById(R.id.alerts_recyclerview);
         alert_progress = view.findViewById(R.id.alert_progress);
+        empty_alerts_state = view.findViewById(R.id.empty_alerts_state);
 
         alerts_recyclerview.setLayoutManager(new LinearLayoutManager(getContext()));
         recentAlertsAdapter = new AlertsAdapter(getContext(), new ArrayList<>());
@@ -53,12 +58,18 @@ public class AlertsFragment extends Fragment {
         loadAlerts();
 
         return view;
+        
+
     }
 
     private void loadAlerts() {
         SharedPreferences sharedPreferences = requireContext().getSharedPreferences("user_pref", Context.MODE_PRIVATE);
         String userId = sharedPreferences.getString("id", null);
         if (userId == null) return;
+
+        alert_progress.setVisibility(View.VISIBLE);
+        alerts_recyclerview.setVisibility(View.GONE);
+        empty_alerts_state.setVisibility(View.GONE);
 
         SupabaseApi api = ApiClient.getClient().create(SupabaseApi.class);
 
@@ -68,12 +79,16 @@ public class AlertsFragment extends Fragment {
         fraudCall.enqueue(new Callback<List<Transactions>>() {
             @Override
             public void onResponse(@NonNull Call<List<Transactions>> call, @NonNull Response<List<Transactions>> fraudResponse) {
+                if (!isAdded() || getContext() == null) return;
+
                 List<Transactions> fraudList = fraudResponse.isSuccessful() && fraudResponse.body() != null
                         ? fraudResponse.body() : new ArrayList<>();
 
                 unverifiedCall.enqueue(new Callback<List<Transactions>>() {
                     @Override
                     public void onResponse(@NonNull Call<List<Transactions>> call, @NonNull Response<List<Transactions>> unverifiedResponse) {
+                        if (!isAdded() || getContext() == null) return;
+
                         List<Transactions> unverifiedList = unverifiedResponse.isSuccessful() && unverifiedResponse.body() != null
                                 ? unverifiedResponse.body() : new ArrayList<>();
 
@@ -81,26 +96,38 @@ public class AlertsFragment extends Fragment {
                         alertList.addAll(fraudList);
                         alertList.addAll(unverifiedList);
 
-                        Collections.sort(alertList, (t1, t2) -> t2.getDate().compareTo(t1.getDate()));
-
-                        recentAlertsAdapter = new AlertsAdapter(getContext(), alertList);
-                        alerts_recyclerview.setAdapter(recentAlertsAdapter);
-
                         alert_progress.setVisibility(View.GONE);
-                        alerts_recyclerview.setVisibility(View.VISIBLE);
 
+                        if (alertList.isEmpty()) {
+                            alerts_recyclerview.setVisibility(View.GONE);
+                            empty_alerts_state.setVisibility(View.VISIBLE);
+                        } else {
+                            Collections.sort(alertList, (t1, t2) -> t2.getDate().compareTo(t1.getDate()));
+
+                            recentAlertsAdapter = new AlertsAdapter(getContext(), alertList);
+                            alerts_recyclerview.setAdapter(recentAlertsAdapter);
+
+                            alerts_recyclerview.setVisibility(View.VISIBLE);
+                            empty_alerts_state.setVisibility(View.GONE);
+                        }
                     }
 
                     @Override
                     public void onFailure(@NonNull Call<List<Transactions>> call, @NonNull Throwable t) {
-                        Log.e("HomeFragment", "Error loading unverified transactions: " + t.getMessage());
+                        if (!isAdded() || getContext() == null) return;
+                        alert_progress.setVisibility(View.GONE);
+                        empty_alerts_state.setVisibility(View.VISIBLE);
+                        Log.e("AlertsFragment", "Error loading unverified transactions: " + t.getMessage());
                     }
                 });
             }
 
             @Override
             public void onFailure(@NonNull Call<List<Transactions>> call, @NonNull Throwable t) {
-                Log.e("HomeFragment", "Error loading fraud transactions: " + t.getMessage());
+                if (!isAdded() || getContext() == null) return;
+                alert_progress.setVisibility(View.GONE);
+                empty_alerts_state.setVisibility(View.VISIBLE);
+                Log.e("AlertsFragment", "Error loading fraud transactions: " + t.getMessage());
             }
         });
     }

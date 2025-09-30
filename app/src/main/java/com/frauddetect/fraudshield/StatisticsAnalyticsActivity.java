@@ -1,10 +1,12 @@
 package com.frauddetect.fraudshield;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -32,6 +34,7 @@ import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.ValueFormatter;
+import com.google.android.material.appbar.MaterialToolbar;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -54,6 +57,8 @@ public class StatisticsAnalyticsActivity extends AppCompatActivity {
     private TextView tvTotalTransactions, tvTotalAmount, tvAvgTransaction;
     private ProgressBar progressBar;
     private static final String TAG = "ReportsAnalytics";
+    MaterialToolbar reportAnalyticsToolbar;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,9 +67,18 @@ public class StatisticsAnalyticsActivity extends AppCompatActivity {
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
+        reportAnalyticsToolbar = findViewById(R.id.reportAnalyticsToolbar);
+
+        reportAnalyticsToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(StatisticsAnalyticsActivity.this, DashboardActivity.class);
+                startActivity(intent);
+
+            }
+        });
 
         initViews();
-        setupToolbar();
 
         String userId = getCurrentUserId();
         if (userId != null) {
@@ -82,11 +96,8 @@ public class StatisticsAnalyticsActivity extends AppCompatActivity {
         tvTotalTransactions = findViewById(R.id.tvTotalTransactions);
         tvTotalAmount = findViewById(R.id.tvTotalAmount);
         tvAvgTransaction = findViewById(R.id.tvAvgTransaction);
-        progressBar = findViewById(R.id.progressBar);
-    }
+        progressBar = findViewById(R.id.reportProgressBar);
 
-    private void setupToolbar() {
-        findViewById(R.id.toolbar).setOnClickListener(v -> finish());
     }
 
     private void showLoading(boolean show) {
@@ -161,8 +172,6 @@ public class StatisticsAnalyticsActivity extends AppCompatActivity {
             return 0.0;
         }
     }
-
-
 
     private void setupPieChart(List<Transactions> transactions) {
         HashMap<String, Float> categorySums = new HashMap<>();
@@ -398,5 +407,14 @@ public class StatisticsAnalyticsActivity extends AppCompatActivity {
         } catch (Exception e) {
             return 0f;
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        Intent intent = new Intent(StatisticsAnalyticsActivity.this, DashboardActivity.class);
+        startActivity(intent);
+
     }
 }

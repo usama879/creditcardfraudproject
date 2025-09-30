@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
@@ -35,6 +36,7 @@ import com.frauddetect.fraudshield.Models.User;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.textfield.TextInputEditText;
@@ -72,6 +74,7 @@ public class AddTransactionActivity extends AppCompatActivity {
     int category_kids_pets = 0;
     int category_home = 0;
     int category_personal_care = 0;
+    MaterialToolbar addTransactionToolbar;
 
 
 
@@ -94,12 +97,22 @@ public class AddTransactionActivity extends AppCompatActivity {
         etCityPopulation= findViewById(R.id.etCityPopulation);
         etAge = findViewById(R.id.etAge);
         etUserId = findViewById(R.id.etUserId);
+        addTransactionToolbar = findViewById(R.id.addTransactionToolbar);
 
         setupMerchantDropdown();
         setupDatePicker();
         setupTimePicker();
         setupSaveButton();
 
+        addTransactionToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent intent = new Intent(AddTransactionActivity.this, DashboardActivity.class);
+                startActivity(intent);
+
+            }
+        });
 
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
@@ -211,6 +224,9 @@ public class AddTransactionActivity extends AppCompatActivity {
         }
         if (TextUtils.isEmpty(etCardNumber.getText())) {
             etCardNumber.setError("Enter card number");
+            return false;
+        } else if (etCardNumber.getText().toString().trim().length() != 16) {
+            etCardNumber.setError("Enter valid card number (16 digits)");
             return false;
         }
         if (TextUtils.isEmpty(etCity.getText())) {

@@ -1,19 +1,25 @@
 package com.frauddetect.fraudshield.Adapters;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.frauddetect.fraudshield.DashboardActivity;
+import com.frauddetect.fraudshield.Models.SupabaseApi;
+import com.frauddetect.fraudshield.Models.SupabaseClient;
 import com.frauddetect.fraudshield.Models.Transactions;
 import com.frauddetect.fraudshield.R;
 import com.google.android.material.button.MaterialButton;
@@ -24,6 +30,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+
+import retrofit2.Call;
+
 
 public class AlertsAdapter extends RecyclerView.Adapter<AlertsAdapter.AlertViewHolder> {
 
@@ -85,22 +94,59 @@ public class AlertsAdapter extends RecyclerView.Adapter<AlertsAdapter.AlertViewH
         });
 
         if (status.equals("fraud")) {
-            holder.btnTakeAction.setVisibility(View.GONE);
+            holder.btnTakeAction.setVisibility(View.VISIBLE);
         } else if (status.equals("not_fraud")) {
             holder.btnTakeAction.setVisibility(View.GONE);
         } else {
             holder.btnTakeAction.setVisibility(View.VISIBLE);
         }
 
-        holder.btnTakeAction.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        holder.btnTakeAction.setOnClickListener(v -> {
+            if ("fraud".equalsIgnoreCase(status)) {
+                ProgressDialog progressDialog = new ProgressDialog(context);
+                progressDialog.setMessage("Blocking " + alert.getCc_num() + " card for further transactions");
+                progressDialog.setCancelable(false);
+                progressDialog.show();
+
+                SupabaseApi api = SupabaseClient.getInstance().getApi();
+                Log.d("AlertsAdapter", "Attempting to delete tid: " + alert.getTid());
+
+                api.deleteTransaction("eq." + alert.getTid()).enqueue(new retrofit2.Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, retrofit2.Response<Void> response) {
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+
+                                progressDialog.dismiss();
+                                if (response.isSuccessful()) {
+                                    Toast.makeText(context, "Card Blocked Temporary", Toast.LENGTH_SHORT).show();
+                                    alerts.remove(holder.getAdapterPosition());
+                                    notifyItemRemoved(holder.getAdapterPosition());
+                                    notifyItemRangeChanged(holder.getAdapterPosition(), alerts.size());
+
+                                } else {
+                                    Toast.makeText(context, "Failed to delete transaction", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }, 1300);
+                    }
+
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+                        progressDialog.dismiss();
+                        Toast.makeText(context, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+            } else {
                 Intent intent = new Intent(context, DashboardActivity.class);
                 intent.putExtra("openFragment", "alerts");
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 context.startActivity(intent);
             }
         });
+
     }
 
     @Override

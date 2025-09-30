@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
@@ -16,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.frauddetect.fraudshield.Adapters.CheckFraudAdapter;
 import com.frauddetect.fraudshield.Models.SupabaseApi;
 import com.frauddetect.fraudshield.Models.Transactions;
+import com.google.android.material.appbar.MaterialToolbar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +33,8 @@ public class FraudDetectionActivity extends AppCompatActivity {
     RecyclerView rvFraudDetection1;
     ProgressBar progressBar1;
     private CheckFraudAdapter adapter;
+    MaterialToolbar fraudDetectToolbar;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +44,8 @@ public class FraudDetectionActivity extends AppCompatActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         rvFraudDetection1 = findViewById(R.id.rvFraudDetection1);
-        progressBar1 = findViewById(R.id.progressBar1);
+        progressBar1 = findViewById(R.id.fruadDetectionProgress);
+        fraudDetectToolbar= findViewById(R.id.fraudDetectToolbar);
 
         rvFraudDetection1.setLayoutManager(new LinearLayoutManager(this));
         adapter = new CheckFraudAdapter(new ArrayList<>());
@@ -50,6 +55,16 @@ public class FraudDetectionActivity extends AppCompatActivity {
         if (userId != null) {
             fetchUnverifiedTransactions(userId);
         }
+
+        fraudDetectToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent intent = new Intent(FraudDetectionActivity.this, DashboardActivity.class);
+                startActivity(intent);
+
+            }
+        });
     }
 
     private String getUserIdFromPrefs(Context context) {
@@ -59,6 +74,8 @@ public class FraudDetectionActivity extends AppCompatActivity {
 
     private void fetchUnverifiedTransactions(String userId) {
         progressBar1.setVisibility(View.VISIBLE);
+        LinearLayout emptyStateLayout = findViewById(R.id.emptyStateLayout);
+        emptyStateLayout.setVisibility(View.GONE);
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://muthrrjxqtvcgmbrzklx.supabase.co/rest/v1/")
@@ -73,9 +90,13 @@ public class FraudDetectionActivity extends AppCompatActivity {
                     public void onResponse(@NonNull Call<List<Transactions>> call,
                                            @NonNull Response<List<Transactions>> response) {
                         progressBar1.setVisibility(View.GONE);
-                        if (response.isSuccessful() && response.body() != null) {
+                        if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
+                            rvFraudDetection1.setVisibility(View.VISIBLE);
+                            emptyStateLayout.setVisibility(View.GONE);
                             adapter.updateData(response.body());
                         } else {
+                            rvFraudDetection1.setVisibility(View.GONE);
+                            emptyStateLayout.setVisibility(View.VISIBLE);
                             adapter.updateData(new ArrayList<>());
                         }
                     }
@@ -84,6 +105,8 @@ public class FraudDetectionActivity extends AppCompatActivity {
                     public void onFailure(@NonNull Call<List<Transactions>> call,
                                           @NonNull Throwable t) {
                         progressBar1.setVisibility(View.GONE);
+                        rvFraudDetection1.setVisibility(View.GONE);
+                        emptyStateLayout.setVisibility(View.VISIBLE);
                         adapter.updateData(new ArrayList<>());
                     }
                 });

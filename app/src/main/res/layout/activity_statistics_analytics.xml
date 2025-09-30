@@ -15,11 +15,11 @@
         app:elevation="0dp">
 
         <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar"
+            android:id="@+id/reportAnalyticsToolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/deep_blue"
-            app:title="Reports &amp; Analytics"
+            app:title="Statistics &amp; Analytics"
             app:titleTextColor="@color/white"
             app:navigationIcon="@drawable/ic_arrow_back"
             app:navigationIconTint="@color/white" />
@@ -336,7 +336,7 @@
     </androidx.core.widget.NestedScrollView>
 
     <ProgressBar
-        android:id="@+id/progressBar"
+        android:id="@+id/reportProgressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"

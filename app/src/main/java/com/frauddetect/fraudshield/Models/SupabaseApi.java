@@ -5,6 +5,7 @@ import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Headers;
 import retrofit2.http.PATCH;
@@ -50,6 +51,10 @@ public interface SupabaseApi {
     @Headers({API_KEY, AUTHORIZATION, "Content-Type: application/json"})
     @PATCH("users")
     Call<Void> updateUserById(@Query("id") String idFilter, @Body Map<String, String> updatedData);
+
+    @Headers({API_KEY, AUTHORIZATION})
+    @DELETE("transaction_data")
+    Call<Void> deleteTransaction(@Query("tid") String tidFilter);
 
 
 }
