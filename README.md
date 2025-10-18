@@ -83,11 +83,10 @@ This section explains how to **set up the environment and run the FraudShield An
 
 ## Step 3: Download and Run the FraudShield App
 
-1. Go to this GitHub repository and **navigate to the `FraudShieldApp` folder**.  
-2. Inside it, you will find another folder named **`FraudShield`**.  
+1. Go to this GitHub repository and Download repository as zip file.  
 3. **Download this folder as a ZIP file** and extract it to your desktop.
 4. Open **Android Studio**, then click on **“Open”**.
-5. Browse and select the extracted folder named **`FraudShield`** on your desktop.
+5. Browse and select the extracted folder on your desktop.
 6. Wait for Android Studio to **sync and build the project** completely.  
 7. In case you encounter any Gradle-related errors:
    - Go to **File → Project Structure** in Android Studio.
