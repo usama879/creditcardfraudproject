@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".RegisterActivity">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="32dp"
+            android:gravity="center">
+
+            <RelativeLayout
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_centerHorizontal="true">
+
+                <ImageView
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    android:src="@drawable/circle_outer_layer"
+                    android:layout_centerInParent="true" />
+
+                <ImageView
+                    android:layout_width="90dp"
+                    android:layout_height="90dp"
+                    android:src="@drawable/circle_middle_layer"
+                    android:layout_centerInParent="true" />
+
+                <ImageView
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:src="@drawable/circle_inner_layer"
+                    android:layout_centerInParent="true" />
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/ic_shield_lock"
+                    android:layout_centerInParent="true"
+                    android:contentDescription="Shield Logo" />
+            </RelativeLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="FraudShield"
+                android:textColor="@color/deep_blue"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/inter_bold"
+                android:layout_marginTop="25dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Create Account To Get Started"
+                android:textColor="@color/lighter_blue"
+                android:textSize="16sp"
+                android:fontFamily="@font/inter_semibold"
+                android:layout_marginTop="6dp" />
+
+            <EditText
+                android:id="@+id/editTextName"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="30dp"
+                android:hint="Full Name"
+                android:textColorHint="#50000000"
+                android:inputType="textPersonName|textCapWords"
+                android:background="@drawable/bg_edittext"
+                android:drawableLeft="@drawable/ic_name"
+                android:drawableTint="@color/lighter_blue"
+                android:drawablePadding="10dp"
+                android:paddingHorizontal="16dp"
+                android:textSize="14sp"
+                android:textColor="@color/deep_blue"
+                android:fontFamily="@font/inter_regular" />
+
+            <EditText
+                android:id="@+id/editTextEmail"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="16dp"
+                android:hint="Email Address"
+                android:textColorHint="#50000000"
+                android:inputType="textEmailAddress"
+                android:background="@drawable/bg_edittext"
+                android:drawableLeft="@drawable/ic_email"
+                android:drawableTint="@color/lighter_blue"
+                android:drawablePadding="10dp"
+                android:paddingHorizontal="16dp"
+                android:textSize="14sp"
+                android:textColor="@color/deep_blue"
+                android:fontFamily="@font/inter_regular" />
+
+            <EditText
+                android:id="@+id/editTextPhone"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="16dp"
+                android:hint="Phone Number"
+                android:textColorHint="#50000000"
+                android:inputType="phone"
+                android:background="@drawable/bg_edittext"
+                android:drawableLeft="@drawable/ic_phone"
+                android:drawableTint="@color/lighter_blue"
+                android:drawablePadding="10dp"
+                android:paddingHorizontal="16dp"
+                android:textSize="14sp"
+                android:textColor="@color/deep_blue"
+                android:fontFamily="@font/inter_regular" />
+
+            <EditText
+                android:id="@+id/editTextDOB"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="16dp"
+                android:hint="DOB"
+                android:textColorHint="#50000000"
+                android:inputType="text"
+                android:focusable="false"
+                android:background="@drawable/bg_edittext"
+                android:drawableLeft="@drawable/ic_calendar"
+                android:drawableTint="@color/lighter_blue"
+                android:drawablePadding="10dp"
+                android:paddingHorizontal="16dp"
+                android:textSize="14sp"
+                android:textColor="@color/deep_blue"
+                android:fontFamily="@font/inter_regular" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/bg_edittext">
+
+                <EditText
+                    android:id="@+id/editTextPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:hint="Password"
+                    android:inputType="textPassword"
+                    android:textColor="@color/deep_blue"
+                    android:textColorHint="#50000000"
+                    android:textSize="14sp"
+                    android:fontFamily="@font/inter_regular"
+                    android:drawableLeft="@drawable/ic_lock"
+                    android:drawableTint="@color/lighter_blue"
+                    android:drawablePadding="10dp"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="48dp"
+                    android:background="@android:color/transparent" />
+
+                <ImageView
+                    android:id="@+id/iconToggle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="16dp"
+                    android:src="@drawable/ic_eye_off"
+                    app:tint="#503B82F6" />
+
+            </RelativeLayout>
+
+
+            <LinearLayout
+                android:id="@+id/passwordRules"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_margin="8dp"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingVertical="4dp">
+
+                    <ImageView
+                        android:id="@+id/imageUppercaseRule"
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        android:src="@drawable/ic_tick_circle"
+                        app:tint="#A0A0A0"
+                        android:layout_marginEnd="8dp" />
+
+                    <TextView
+                        android:id="@+id/tvUppercaseRule"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="At least 1 uppercase letter"
+                        android:textColor="#A0A0A0"
+                        android:textSize="10sp"
+                        android:fontFamily="@font/inter_regular" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingVertical="4dp">
+
+                    <ImageView
+                        android:id="@+id/imageLowercaseRule"
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        android:src="@drawable/ic_tick_circle"
+                        app:tint="#A0A0A0"
+                        android:layout_marginEnd="8dp" />
+
+                    <TextView
+                        android:id="@+id/tvLowercaseRule"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="AAt least 1 lower letter"
+                        android:textColor="#A0A0A0"
+                        android:textSize="10sp"
+                        android:fontFamily="@font/inter_regular" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingVertical="4dp">
+
+                    <ImageView
+                        android:id="@+id/imageNumberRule"
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        android:src="@drawable/ic_tick_circle"
+                        app:tint="#A0A0A0"
+                        android:layout_marginEnd="8dp" />
+
+                    <TextView
+                        android:id="@+id/tvNumberRule"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="At least 1 number"
+                        android:textColor="#A0A0A0"
+                        android:textSize="10sp"
+                        android:fontFamily="@font/inter_regular" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingVertical="4dp">
+
+                    <ImageView
+                        android:id="@+id/imageSpecialCharRule"
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        android:src="@drawable/ic_tick_circle"
+                        app:tint="#A0A0A0"
+                        android:layout_marginEnd="8dp" />
+
+                    <TextView
+                        android:id="@+id/tvSpecialCharRule"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="At least 1 special character"
+                        android:textColor="#A0A0A0"
+                        android:textSize="10sp"
+                        android:fontFamily="@font/inter_regular" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/bg_edittext">
+
+                <EditText
+                    android:id="@+id/editTextConfirmPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:hint="Confirm Password"
+                    android:inputType="textPassword"
+                    android:textColor="@color/deep_blue"
+                    android:textColorHint="#50000000"
+                    android:textSize="14sp"
+                    android:fontFamily="@font/inter_regular"
+                    android:drawableLeft="@drawable/ic_lock"
+                    android:drawableTint="@color/lighter_blue"
+                    android:drawablePadding="10dp"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="48dp"
+                    android:background="@android:color/transparent" />
+
+                <ImageView
+                    android:id="@+id/iconConfirmToggle"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="16dp"
+                    android:src="@drawable/ic_eye_off"
+                    app:tint="#503B82F6" />
+
+            </RelativeLayout>
+
+            <Button
+                android:id="@+id/buttonRegister"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="24dp"
+                android:text="Register"
+                android:textAllCaps="false"
+                android:background="@drawable/button_background"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/deep_blue"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/inter_medium" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="40dp"
+                android:layout_marginBottom="40dp"
+                android:layout_gravity="center">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Already have an account? "
+                    android:textColor="@color/text_secondary"
+                    android:textSize="14sp"
+                    android:fontFamily="@font/inter_regular" />
+
+                <TextView
+                    android:id="@+id/textLogin"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Login"
+                    android:textColor="@color/lighter_blue"
+                    android:textSize="14sp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:padding="4dp"
+                    android:fontFamily="@font/inter_medium" />
+
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</RelativeLayout>
